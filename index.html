@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뷰티 타입 테스트</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #D4537E;
+    --pink-light: #FBEAF0;
+    --pink-mid: #F4C0D1;
+    --pink-dark: #72243E;
+    --black: #1A1A1A;
+    --gray1: #5C5C5C;
+    --gray2: #9E9E9E;
+    --gray3: #E8E8E8;
+    --gray4: #F7F7F7;
+    --white: #FFFFFF;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray4);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+  }
+
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 16px 60px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    padding: 36px 32px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+  }
+
+  /* ── Welcome ── */
+  .welcome-logo {
+    width: 52px; height: 52px;
+    background: var(--pink-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .welcome-logo svg { width: 24px; height: 24px; }
+  .welcome-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--pink); margin-bottom: 8px; }
+  .welcome-title { font-size: 26px; font-weight: 700; color: var(--black); line-height: 1.25; margin-bottom: 10px; }
+  .welcome-sub { font-size: 14px; color: var(--gray1); line-height: 1.7; margin-bottom: 28px; }
+  .welcome-meta { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+  .welcome-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray2); }
+  .welcome-meta-item span { font-size: 15px; }
+
+  /* ── Selfie opt-in ── */
+  .selfie-banner {
+    background: var(--pink-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .selfie-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .selfie-text { font-size: 13px; color: var(--pink-dark); line-height: 1.6; }
+  .selfie-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
+
+  .selfie-btns { display: flex; gap: 10px; margin-bottom: 28px; }
+  .selfie-btn {
+    flex: 1; padding: 11px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray3); background: var(--white);
+    font-size: 13px; font-weight: 500; color: var(--gray1);
+    cursor: pointer; transition: all 0.15s; text-align: center;
+    font-family: inherit;
+  }
+  .selfie-btn:hover { border-color: var(--pink); color: var(--pink); }
+  .selfie-btn.selected { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); }
+
+  /* ── Primary Button ── */
+  .btn-primary {
+    width: 100%; padding: 15px;
+    background: var(--pink); color: var(--white);
+    border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    font-family: inherit;
+  }
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+  /* ── Progress ── */
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--pink); }
+  .progress-count { font-size: 12px; color: var(--gray2); }
+  .progress-bar { height: 3px; background: var(--gray3); border-radius: 2px; }
+  .progress-fill { height: 100%; background: var(--pink); border-radius: 2px; transition: width 0.3s ease; }
+
+  /* ── Question ── */
+  .q-title { font-size: 19px; font-weight: 700; color: var(--black); line-height: 1.4; margin-bottom: 6px; }
+  .q-hint { font-size: 13px; color: var(--gray2); margin-bottom: 20px; }
+
+  /* ── Options ── */
+  .options { display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
+  .option {
+    padding: 13px 16px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray3); background: var(--white);
+    font-size: 14px; color: var(--gray1);
+    cursor: pointer; transition: all 0.15s;
+    text-align: left; display: flex; align-items: center; gap: 10px;
+    font-family: inherit;
+  }
+  .option:hover { border-color: var(--pink-mid); color: var(--black); }
+  .option.selected { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); font-weight: 500; }
+  .option-dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid var(--gray3); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .option.selected .option-dot { background: var(--pink); border-color: var(--pink); }
+  .option.selected .option-dot::after { content: ''; display: block; width: 6px; height: 6px; background: white; border-radius: 50%; }
+
+  .options.multi { flex-direction: row; flex-wrap: wrap; }
+  .options.multi .option {
+    flex: 0 0 auto; padding: 8px 14px;
+    border-radius: 20px; font-size: 13px;
+  }
+  .options.multi .option-dot { display: none; }
+
+  /* ── Nav ── */
+  .nav-row { display: flex; gap: 10px; align-items: center; }
+  .btn-back {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid var(--gray3); background: var(--white);
+    cursor: pointer; font-size: 16px; color: var(--gray1);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: border-color 0.15s;
+  }
+  .btn-back:hover { border-color: var(--gray2); }
+
+  /* ── Loading ── */
+  .loading-wrap { text-align: center; padding: 40px 0; }
+  .loading-spinner {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 3px solid var(--gray3);
+    border-top-color: var(--pink);
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-title { font-size: 17px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
+  .loading-sub { font-size: 13px; color: var(--gray2); }
+
+  /* ── Result ── */
+  .result-hero {
+    background: var(--pink-light);
+    border-radius: var(--radius);
+    padding: 24px; text-align: center;
+    margin-bottom: 24px;
+  }
+  .result-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--pink); margin-bottom: 6px; }
+  .result-type-name { font-size: 28px; font-weight: 700; color: var(--pink-dark); margin-bottom: 6px; }
+  .result-type-sub { font-size: 13px; color: var(--pink); line-height: 1.6; }
+  .result-tags { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .result-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: white; color: var(--pink-dark); }
+  .swatches { display: flex; gap: 8px; justify-content: center; margin: 12px 0 0; }
+  .swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px rgba(0,0,0,0.08); }
+
+  .result-section { margin-bottom: 20px; }
+  .result-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--gray2); margin-bottom: 10px;
+  }
+  .routine-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .routine-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; color: var(--gray1); line-height: 1.5;
+  }
+  .routine-step {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--pink-light); color: var(--pink);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+
+  .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .product-card { border: 1px solid var(--gray3); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .product-tier { font-size: 10px; font-weight: 700; letter-spacing: 0.04em; color: var(--pink); margin-bottom: 3px; }
+  .product-name { font-size: 12px; font-weight: 500; color: var(--black); line-height: 1.3; }
+  .product-brand { font-size: 11px; color: var(--gray2); }
+
+  .selfie-note {
+    background: var(--pink-light); border-radius: var(--radius-sm);
+    padding: 12px 14px; font-size: 13px; color: var(--pink-dark);
+    display: flex; gap: 8px; align-items: flex-start; margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .divider { height: 1px; background: var(--gray3); margin: 20px 0; }
+
+  .share-row { display: flex; gap: 8px; }
+  .btn-share {
+    flex: 1; padding: 12px;
+    border-radius: var(--radius-sm); border: 1.5px solid var(--gray3);
+    background: var(--white); font-size: 13px; font-weight: 500;
+    color: var(--gray1); cursor: pointer; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-share:hover { border-color: var(--pink); color: var(--pink); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 400px) {
+    .card { padding: 28px 20px; }
+    .q-title { font-size: 17px; }
+    .product-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="card" id="card">
+
+    <!-- 웰컴 화면 -->
+    <div id="screen-welcome">
+      <div class="welcome-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D4537E" stroke-width="1.8">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+          <line x1="9" y1="9" x2="9.01" y2="9" stroke-linecap="round" stroke-width="2.5"/>
+          <line x1="15" y1="9" x2="15.01" y2="9" stroke-linecap="round" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="welcome-eyebrow">뷰티 타입 테스트</div>
+      <h1 class="welcome-title">나만의 뷰티 프로필을<br>찾아보세요</h1>
+      <p class="welcome-sub">피부, 스타일, 목표에 관한 12가지 질문으로 나에게 딱 맞는 뷰티 타입과 루틴을 알려드려요.</p>
+      <div class="welcome-meta">
+        <div class="welcome-meta-item"><span>⏱</span> 약 3분</div>
+        <div class="welcome-meta-item"><span>✦</span> 6가지 뷰티 타입</div>
+        <div class="welcome-meta-item"><span>🎁</span> 무료</div>
+      </div>
+
+      <div class="selfie-banner">
+        <div class="selfie-icon">📷</div>
+        <div class="selfie-text">
+          <strong>더 정확한 결과를 원하세요?</strong>
+          셀피를 추가하면 피부톤과 언더톤을 자동으로 분석해 결과가 더 정확해져요. 선택 사항이에요.
+        </div>
+      </div>
+      <div class="selfie-btns">
+        <button class="selfie-btn selected" id="selfie-no" onclick="setSelfie(false)">나중에 할게요</button>
+        <button class="selfie-btn" id="selfie-yes" onclick="setSelfie(true)">✦ 셀피 추가하기</button>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">테스트 시작하기 →</button>
+    </div>
+
+    <!-- 질문 화면 -->
+    <div id="screen-question" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-cat" id="q-category"></span>
+          <span class="progress-count" id="q-count"></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="q-progress"></div></div>
+      </div>
+      <div class="q-title" id="q-title"></div>
+      <div class="q-hint" id="q-hint"></div>
+      <div class="options" id="q-options"></div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <button class="btn-primary" id="btn-next" onclick="goNext()" disabled>다음 →</button>
+      </div>
+    </div>
+
+    <!-- 셀피 업로드 화면 -->
+    <div id="screen-selfie" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-cat">얼굴 분석</span>
+          <span class="progress-count">선택</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+      </div>
+      <div class="q-title">셀피를 추가하면 분석이 더 정확해져요</div>
+      <div class="q-hint" style="margin-bottom:20px">피부톤과 언더톤을 감지하는 데 사용돼요. 사진은 저장되지 않아요.</div>
+      <div style="border: 2px dashed var(--gray3); border-radius: var(--radius); padding: 32px; text-align: center; margin-bottom: 20px; cursor: pointer; background: var(--gray4);" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 32px; margin-bottom: 8px;">🤳</div>
+        <div style="font-size: 14px; font-weight: 500; color: var(--gray1); margin-bottom: 4px;">탭해서 업로드</div>
+        <div style="font-size: 12px; color: var(--gray2);">밝은 조명에서 촬영하면 더 정확해요</div>
+        <input type="file" id="file-input" accept="image/*" capture="user" style="display:none" onchange="handleSelfie(event)">
+      </div>
+      <div id="selfie-preview" class="hidden" style="text-align:center; margin-bottom:20px;">
+        <img id="selfie-img" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid var(--pink-light);">
+        <div style="font-size: 12px; color: var(--pink); margin-top: 8px; font-weight: 500;">사진 추가 완료 ✓</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="skipSelfie()">건너뛰기</button>
+        <button class="btn-primary" onclick="showLoading()">결과 보기 →</button>
+      </div>
+    </div>
+
+    <!-- 로딩 화면 -->
+    <div id="screen-loading" class="hidden">
+      <div class="loading-wrap">
+        <div class="loading-spinner"></div>
+        <div class="loading-title" id="loading-text">뷰티 프로필 분석 중...</div>
+        <div class="loading-sub">나에게 맞는 타입을 찾고 있어요</div>
+      </div>
+    </div>
+
+    <!-- 결과 화면 -->
+    <div id="screen-result" class="hidden">
+      <div class="result-hero">
+        <div class="result-eyebrow">나의 뷰티 타입</div>
+        <div class="result-type-name" id="res-name"></div>
+        <div class="result-type-sub" id="res-sub"></div>
+        <div class="result-tags" id="res-tags"></div>
+        <div class="swatches" id="res-swatches"></div>
+      </div>
+
+      <div id="selfie-result-note" class="selfie-note hidden">
+        <span>📷</span>
+        <span id="selfie-analysis-text"></span>
+      </div>
+
+      <div class="result-section">
+        <div class="result-section-label">컬러 분석</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:110px; background:var(--gray4); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:11px; color:var(--gray2); margin-bottom:2px;">언더톤</div>
+            <div style="font-size:14px; font-weight:600; color:var(--black);" id="res-undertone"></div>
+          </div>
+          <div style="flex:1; min-width:110px; background:var(--gray4); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:11px; color:var(--gray2); margin-bottom:2px;">피부 표현</div>
+            <div style="font-size:14px; font-weight:600; color:var(--black);" id="res-finish"></div>
+          </div>
+          <div style="flex:1; min-width:110px; background:var(--gray4); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:11px; color:var(--gray2); margin-bottom:2px;">피해야 할 것</div>
+            <div style="font-size:14px; font-weight:600; color:var(--black);" id="res-avoid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <div class="result-section-label">나만의 맞춤 루틴</div>
+        <ul class="routine-list" id="res-routine"></ul>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <div class="result-section-label">추천 제품</div>
+        <div class="product-grid" id="res-products"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <div class="result-section-label">매트 vs 데이 · 웜톤 vs 쿨톤</div>
+        <div style="background:var(--pink-light); border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; color:var(--pink-dark); line-height:1.7;" id="res-comparison"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="share-row">
+        <button class="btn-share" onclick="retakeQuiz()">↩ 다시 하기</button>
+        <button class="btn-share" onclick="shareResult()">결과 공유하기 ↗</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 'skin_type', category: '피부 기본 정보', q: '내 피부 타입은 무엇인가요?',
+    hint: null, multi: false,
+    options: ['지성', '건성', '복합성', '중성', '민감성'],
+    scores: {
+      '지성':  { clean:2, dewy:0, bare:0, romantic:1, bold:1, cool:1 },
+      '건성':  { bare:2, dewy:2, clean:0, romantic:1, bold:0, cool:0 },
+      '복합성':{ clean:2, bare:1, dewy:1, romantic:1, bold:1, cool:1 },
+      '중성':  { bare:1, clean:1, dewy:1, romantic:1, bold:1, cool:1 },
+      '민감성':{ bare:3, clean:1, dewy:1, romantic:1, bold:0, cool:0 },
+    }
+  },
+  {
+    id: 'skin_concerns', category: '피부 기본 정보', q: '주요 피부 고민이 있나요?',
+    hint: '해당하는 것을 모두 선택해주세요', multi: true,
+    options: ['여드름', '홍조', '잡티·다크스팟', '모공', '건조함', '칙칙함'],
+    scores: {
+      '여드름':     { bare:1, clean:1 },
+      '홍조':       { bare:1 },
+      '잡티·다크스팟':{ clean:1, dewy:1 },
+      '모공':       { clean:2 },
+      '건조함':     { dewy:2, bare:1 },
+      '칙칙함':     { dewy:2, romantic:1 },
+    }
+  },
+  {
+    id: 'frequency', category: '메이크업 성향', q: '메이크업을 얼마나 자주 하나요?',
+    hint: null, multi: false,
+    options: ['매일', '주 2~3회', '가끔', '거의 안 함'],
+    scores: {
+      '매일':      { clean:2, romantic:2, bold:2, cool:2 },
+      '주 2~3회':  { dewy:2, cool:1, romantic:1 },
+      '가끔':      { bare:2, dewy:1 },
+      '거의 안 함':{ bare:3 },
+    }
+  },
+  {
+    id: 'style', category: '메이크업 성향', q: '나에게 가장 어울리는 스타일은?',
+    hint: '직감적으로 골라보세요', multi: false,
+    options: ['노 메이크업, 자연스럽게', '부드럽고 여성스럽게', '깔끔하고 세련되게', '강렬하고 개성 있게', '시크하고 쿨하게'],
+    scores: {
+      '노 메이크업, 자연스럽게':  { bare:4 },
+      '부드럽고 여성스럽게':      { romantic:4, dewy:1 },
+      '깔끔하고 세련되게':        { clean:4 },
+      '강렬하고 개성 있게':       { bold:4 },
+      '시크하고 쿨하게':          { cool:4 },
+    }
+  },
+  {
+    id: 'time', category: '메이크업 성향', q: '메이크업에 보통 얼마나 시간을 쓰나요?',
+    hint: null, multi: false,
+    options: ['5분 이내', '5~15분', '15~30분', '30분 이상'],
+    scores: {
+      '5분 이내':  { bare:3 },
+      '5~15분':    { dewy:2, cool:2, bare:1 },
+      '15~30분':   { clean:2, romantic:2 },
+      '30분 이상': { bold:3, clean:1 },
+    }
+  },
+  {
+    id: 'undertone', category: '피부 컬러', q: '금 귀걸이와 은 귀걸이 중 더 잘 어울리는 것은?',
+    hint: '언더톤을 파악하는 데 도움이 돼요', multi: false,
+    options: ['금 (웜톤)', '은 (쿨톤)', '둘 다 잘 어울려요', '잘 모르겠어요'],
+    scores: {
+      '금 (웜톤)':      { bare:1, dewy:1, romantic:1 },
+      '은 (쿨톤)':      { cool:2, clean:1 },
+      '둘 다 잘 어울려요':{ cool:1, clean:1, romantic:1 },
+      '잘 모르겠어요':  {},
+    }
+  },
+  {
+    id: 'tone', category: '피부 컬러', q: '내 피부 톤은?',
+    hint: null, multi: false,
+    options: ['매우 밝음', '밝음', '중간', '어두운 편', '깊고 어두움'],
+    scores: {
+      '매우 밝음':{}, '밝음':{}, '중간':{}, '어두운 편':{}, '깊고 어두움':{}
+    }
+  },
+  {
+    id: 'budget', category: '제품 선호', q: '제품 하나에 투자할 수 있는 금액은?',
+    hint: null, multi: false,
+    options: ['1만원 이하', '1~3만원', '3~6만원', '6만원 이상'],
+    scores: {
+      '1만원 이하':{}, '1~3만원':{}, '3~6만원':{}, '6만원 이상':{}
+    }
+  },
+  {
+    id: 'prefs', category: '제품 선호', q: '선호하거나 꼭 지켜야 할 조건이 있나요?',
+    hint: '해당하는 것을 모두 선택해주세요', multi: true,
+    options: ['무향', '크루얼티 프리', '비건', 'SPF 포함', '저자극', '특별한 조건 없음'],
+    scores: {}
+  },
+  {
+    id: 'climate', category: '라이프스타일', q: '사는 곳의 기후는 어떤가요?',
+    hint: null, multi: false,
+    options: ['건조한 편', '습한 편', '추운 편', '계절마다 달라요'],
+    scores: {
+      '건조한 편':   { dewy:2, bare:1 },
+      '습한 편':     { clean:2, cool:1 },
+      '추운 편':     { dewy:1, romantic:1 },
+      '계절마다 달라요':{ clean:1 },
+    }
+  },
+  {
+    id: 'longevity', category: '라이프스타일', q: '하루 종일 유지되는 메이크업이 필요한가요?',
+    hint: null, multi: false,
+    options: ['꼭 필요해요', '되면 좋겠어요', '별로 신경 안 써요'],
+    scores: {
+      '꼭 필요해요':       { clean:2, bold:1 },
+      '되면 좋겠어요':     { clean:1, cool:1 },
+      '별로 신경 안 써요': { bare:2, dewy:1 },
+    }
+  },
+  {
+    id: 'goal', category: '나의 목표', q: '지금 가장 원하는 것은 무엇인가요?',
+    hint: '결과 페이지를 맞춤화하는 데 활용돼요', multi: false,
+    options: ['데일리 루틴 만들기', '나에게 어울리는 컬러 찾기', '파운데이션 쉐이드 찾기', '메이크업 기술 배우기', '제품 추천 받기', '특별한 날을 위한 메이크업'],
+    scores: {
+      '데일리 루틴 만들기':        { bare:1, clean:1 },
+      '나에게 어울리는 컬러 찾기': { romantic:1, cool:1 },
+      '파운데이션 쉐이드 찾기':    { clean:1 },
+      '메이크업 기술 배우기':      { bold:1 },
+      '제품 추천 받기':            { dewy:1 },
+      '특별한 날을 위한 메이크업': { bold:1, romantic:1 },
+    }
+  },
+];
+
+const TYPES = {
+  bare: {
+    name: '베어 스킨',
+    sub: '스킨케어 우선 · 자연스럽게 · 내 피부 그대로',
+    tags: ['노 메이크업 룩', '스킨케어 중심', '5분 루틴'],
+    colors: ['#C8956C', '#E8C9A8', '#F5E6D8', '#D4A574'],
+    undertone: '뉴트럴–웜',
+    finish: '내추럴 / 데이',
+    avoid: '두꺼운 커버리지, 매트',
+    routine: ['SPF 모이스처라이저 또는 틴티드 모이스처라이저', '클리어 브로우 젤', '래시 세럼 또는 클리어 마스카라', '틴티드 립밤'],
+    products: [
+      { tier: '저가', name: 'e.l.f. Halo Glow', brand: 'e.l.f.' },
+      { tier: '중가', name: 'Glossier Skin Tint', brand: 'Glossier' },
+      { tier: '고가', name: 'Armani Luminous Silk', brand: 'Armani' },
+      { tier: '립', name: 'Laneige 립 슬리핑 마스크', brand: 'Laneige' },
+    ],
+    comparison: '내 피부톤과 스타일에는 데이하고 자연스러운 마무리가 잘 어울려요. 풀 매트 베이스는 피하세요. 웜 언더톤이라면 핑크·쿨 계열보다 피치·베이지·골드 뉴드 계열이 훨씬 잘 어울려요.',
+  },
+  dewy: {
+    name: '데이 글로우',
+    sub: '글라스 스킨 · 광채 · 촉촉함이 전부',
+    tags: ['글라스 스킨', '하이라이터', '쿠션'],
+    colors: ['#F9D5C0', '#F4A97F', '#D4897A', '#E8B49A'],
+    undertone: '웜',
+    finish: '데이 / 루미너스',
+    avoid: '매트 파우더, 무광 마무리',
+    routine: ['수분 프라이머', '쿠션 파운데이션 또는 스킨 틴트', '크림 블러셔', '하이포인트에 리퀴드 하이라이터', '글로시 립'],
+    products: [
+      { tier: '저가', name: 'Maybelline Dream Cushion', brand: 'Maybelline' },
+      { tier: '중가', name: 'Rare Beauty Positive Light', brand: 'Rare Beauty' },
+      { tier: '고가', name: 'Charlotte Tilbury Flawless Filter', brand: 'CT' },
+      { tier: '하이라이터', name: 'BECCA Shimmering Skin Perfector', brand: 'BECCA' },
+    ],
+    comparison: '데이한 피부 표현이 시그니처예요 — 웜 언더톤과 잘 어울리고 사진도 예쁘게 나와요. 습한 환경에 살고 있다면 파우더 대신 세팅 스프레이로 마무리하면 더 오래 유지돼요.',
+  },
+  clean: {
+    name: '클린 클래식',
+    sub: '폴리시드 · 자신감 · 하루 종일 완벽하게',
+    tags: ['풀 커버리지', '롱웨어', '오피스 메이크업'],
+    colors: ['#8B4A6E', '#C2748A', '#E8B4C0', '#A06080'],
+    undertone: '쿨–뉴트럴',
+    finish: '새틴 / 세미 매트',
+    avoid: '글리터 섀도우, 블렌딩 안 된 경계선',
+    routine: ['모공 커버 프라이머', '미디엄~풀 커버리지 파운데이션', 'T존 파우더 세팅', '뉴트럴 아이섀도우 + 라이너', '새틴 또는 매트 립'],
+    products: [
+      { tier: '저가', name: "L'Oréal Infallible 24HR", brand: "L'Oréal" },
+      { tier: '중가', name: 'Estée Lauder Double Wear', brand: 'Estée Lauder' },
+      { tier: '고가', name: 'NARS Sheer Glow', brand: 'NARS' },
+      { tier: '립', name: 'MAC Velvet Teddy', brand: 'MAC' },
+    ],
+    comparison: '새틴이나 세미 매트 마무리가 원하는 폴리시드 룩에 딱 맞아요. 쿨–뉴트럴 언더톤이라면 로즈 계열과 베리 컬러 립이 특히 잘 어울려요.',
+  },
+  romantic: {
+    name: '소프트 로맨틱',
+    sub: '핑크 볼터치 · 여성스럽게 · 핑크빛으로 물들기',
+    tags: ['블러셔 필수', '로지 룩', '페미닌'],
+    colors: ['#F4B8C5', '#E87FA0', '#D4537E', '#F0C8D4'],
+    undertone: '웜–뉴트럴',
+    finish: '내추럴 / 새틴',
+    avoid: '강한 컨투어링, 쿨 뉴드',
+    routine: ['스킨 틴트 또는 가벼운 파운데이션', '볼·코끝에 솜털 같은 블러셔', '로즈 또는 모브 립', '마스카라', '선택: 골드 시머 아이'],
+    products: [
+      { tier: '저가', name: 'Milani Baked Blush', brand: 'Milani' },
+      { tier: '중가', name: 'Benefit Dandelion Blush', brand: 'Benefit' },
+      { tier: '고가', name: 'Tower 28 SunnyDays', brand: 'Tower 28' },
+      { tier: '립', name: 'Dior Lip Glow 001 Pink', brand: 'Dior' },
+    ],
+    comparison: '웜 핑크와 피치 로즈 계열이 웜–뉴트럴 언더톤과 잘 어울려요. 내추럴 마무리로 블러셔를 주인공으로 만들어보세요. 쿨 뉴드는 얼굴이 떠 보일 수 있으니 피해요.',
+  },
+  bold: {
+    name: '볼드 아티스트',
+    sub: '그래픽 라이너 · 컬러 플레이 · 강렬한 룩',
+    tags: ['아이 메이크업', '컬러', '에디토리얼'],
+    colors: ['#5C2D91', '#9B4DCA', '#C77DFF', '#7B52A8'],
+    undertone: '다양',
+    finish: '매트 / 혼합',
+    avoid: '너무 무난하게 하는 것',
+    routine: ['매트 또는 새틴 베이스', '볼드 아이섀도우 또는 그래픽 라이너', '인너코너 하이라이트', '베어 또는 뉴드 립으로 밸런스', '세팅 스프레이로 고정'],
+    products: [
+      { tier: '저가', name: 'NYX Epic Ink Liner', brand: 'NYX' },
+      { tier: '중가', name: 'Urban Decay 24/7 팔레트', brand: 'Urban Decay' },
+      { tier: '고가', name: 'Pat McGrath EYEdols 섀도우', brand: 'Pat McGrath' },
+      { tier: '세팅', name: 'Urban Decay All Nighter 스프레이', brand: 'Urban Decay' },
+    ],
+    comparison: '강렬한 아이 메이크업에는 베어 또는 뉴드 립을 매치해서 균형을 맞춰요. 매트 아이리드는 사진이 깔끔하게 나오고, 인너코너 시머로 입체감을 더할 수 있어요.',
+  },
+  cool: {
+    name: '에포트리스 쿨',
+    sub: '쿨 톤 · 에디토리얼 · 미니멀하지만 임팩트 있게',
+    tags: ['쿨톤', '에디토리얼', '베리 립'],
+    colors: ['#708090', '#B0C4DE', '#778899', '#A8B8C8'],
+    undertone: '쿨',
+    finish: '내추럴 / 매트',
+    avoid: '오렌지 기반 파운데이션, 브론즈',
+    routine: ['SPF 베이스 또는 시어 파운데이션', '쿨 톤 브로우 펜슬', '마스카라', '베리 또는 플럼 립 (시그니처)', '선택: 쿨 스모키 아이'],
+    products: [
+      { tier: '저가', name: 'Neutrogena Skin Tint', brand: 'Neutrogena' },
+      { tier: '중가', name: 'Fenty Pro Filt\'r (쿨 쉐이드)', brand: 'Fenty' },
+      { tier: '고가', name: 'Armani Luminous Silk', brand: 'Armani' },
+      { tier: '립', name: 'MAC Diva (다크 베리)', brand: 'MAC' },
+    ],
+    comparison: '쿨 언더톤이라 웜 브론즈는 어색해 보일 수 있어요. 모브·베리 계열 블러셔와 로즈 베이스 파운데이션이 잘 어울려요. 베리 립은 어떤 룩에도 완성도를 높이는 강력한 무기예요.',
+  },
+};
+
+let state = {
+  useSelfie: false,
+  currentQ: 0,
+  answers: {},
+  scores: { bare:0, dewy:0, clean:0, romantic:0, bold:0, cool:0 },
+  resultType: null,
+};
+
+function setSelfie(val) {
+  state.useSelfie = val;
+  document.getElementById('selfie-no').classList.toggle('selected', !val);
+  document.getElementById('selfie-yes').classList.toggle('selected', val);
+}
+
+function startQuiz() {
+  state.currentQ = 0;
+  showQuestion(0);
+}
+
+function showQuestion(idx) {
+  showScreen('question');
+  const q = QUESTIONS[idx];
+  document.getElementById('q-category').textContent = q.category;
+  document.getElementById('q-count').textContent = `${idx + 1} / ${QUESTIONS.length}`;
+  document.getElementById('q-progress').style.width = `${((idx + 1) / QUESTIONS.length) * 100}%`;
+  document.getElementById('q-title').textContent = q.q;
+  document.getElementById('q-hint').textContent = q.hint || '';
+  document.getElementById('q-hint').style.display = q.hint ? 'block' : 'none';
+
+  const optEl = document.getElementById('q-options');
+  optEl.className = 'options' + (q.multi ? ' multi' : '');
+  optEl.innerHTML = '';
+
+  const existing = state.answers[q.id];
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    let isSelected = false;
+    if (q.multi) {
+      isSelected = Array.isArray(existing) && existing.includes(opt);
+      btn.innerHTML = `<span>${opt}</span>`;
+    } else {
+      isSelected = existing === opt;
+      btn.innerHTML = `<div class="option-dot"></div><span>${opt}</span>`;
+    }
+    if (isSelected) btn.classList.add('selected');
+    btn.addEventListener('click', () => selectOption(btn, opt, q));
+    optEl.appendChild(btn);
+  });
+
+  updateNextBtn();
+}
+
+function selectOption(btn, value, q) {
+  if (q.multi) {
+    btn.classList.toggle('selected');
+    const selected = Array.from(document.querySelectorAll('#q-options .option.selected'))
+      .map(b => b.querySelector('span').textContent);
+    state.answers[q.id] = selected;
+  } else {
+    document.querySelectorAll('#q-options .option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.answers[q.id] = value;
+  }
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const q = QUESTIONS[state.currentQ];
+  const ans = state.answers[q.id];
+  const hasAnswer = q.multi ? (Array.isArray(ans) && ans.length > 0) : !!ans;
+  document.getElementById('btn-next').disabled = !hasAnswer;
+  const isLast = state.currentQ === QUESTIONS.length - 1;
+  document.getElementById('btn-next').textContent = isLast ? '결과 보기 →' : '다음 →';
+}
+
+function goNext() {
+  if (state.currentQ < QUESTIONS.length - 1) {
+    state.currentQ++;
+    showQuestion(state.currentQ);
+  } else {
+    if (state.useSelfie) showScreen('selfie');
+    else showLoading();
+  }
+}
+
+function goBack() {
+  if (state.currentQ > 0) { state.currentQ--; showQuestion(state.currentQ); }
+  else showScreen('welcome');
+}
+
+function skipSelfie() { showLoading(); }
+
+function handleSelfie(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('selfie-img').src = ev.target.result;
+    document.getElementById('selfie-preview').classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showLoading() {
+  showScreen('loading');
+  calcScores();
+  const msgs = ['답변을 분석하는 중...', '나에게 맞는 타입 찾는 중...', '맞춤 루틴을 만들고 있어요...'];
+  let i = 0;
+  const interval = setInterval(() => {
+    i++;
+    if (i < msgs.length) document.getElementById('loading-text').textContent = msgs[i];
+    else { clearInterval(interval); showResult(); }
+  }, 800);
+}
+
+function calcScores() {
+  const sc = { bare:0, dewy:0, clean:0, romantic:0, bold:0, cool:0 };
+  QUESTIONS.forEach(q => {
+    const ans = state.answers[q.id];
+    if (!ans || !q.scores) return;
+    const applyScore = val => {
+      const s = q.scores[val];
+      if (s) Object.entries(s).forEach(([k, v]) => sc[k] = (sc[k] || 0) + v);
+    };
+    if (Array.isArray(ans)) ans.forEach(applyScore);
+    else applyScore(ans);
+  });
+  state.scores = sc;
+  state.resultType = Object.entries(sc).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+function showResult() {
+  showScreen('result');
+  const type = TYPES[state.resultType];
+  document.getElementById('res-name').textContent = type.name;
+  document.getElementById('res-sub').textContent = type.sub;
+  document.getElementById('res-tags').innerHTML = type.tags.map(t => `<span class="result-tag">${t}</span>`).join('');
+  document.getElementById('res-swatches').innerHTML = type.colors.map(c => `<div class="swatch" style="background:${c}"></div>`).join('');
+
+  let undertone = type.undertone;
+  const utAns = state.answers['undertone'];
+  if (utAns === '금 (웜톤)') undertone = '웜';
+  else if (utAns === '은 (쿨톤)') undertone = '쿨';
+
+  document.getElementById('res-undertone').textContent = undertone;
+  document.getElementById('res-finish').textContent = type.finish;
+  document.getElementById('res-avoid').textContent = type.avoid;
+
+  if (document.getElementById('selfie-img').src && state.useSelfie) {
+    const note = document.getElementById('selfie-result-note');
+    note.classList.remove('hidden');
+    document.getElementById('selfie-analysis-text').textContent =
+      `셀피 분석 결과, 피부 톤은 ${state.answers['tone'] || '중간'} 정도이며 ${undertone} 언더톤으로 감지됐어요. 결과에 반영했습니다.`;
+  }
+
+  document.getElementById('res-routine').innerHTML = type.routine.map((step, i) =>
+    `<li><div class="routine-step">${i+1}</div><span>${step}</span></li>`
+  ).join('');
+
+  document.getElementById('res-products').innerHTML = type.products.map(p =>
+    `<div class="product-card">
+      <div class="product-tier">${p.tier}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-brand">${p.brand}</div>
+    </div>`
+  ).join('');
+
+  document.getElementById('res-comparison').textContent = type.comparison;
+}
+
+function retakeQuiz() {
+  state = { useSelfie: false, currentQ: 0, answers: {}, scores: { bare:0, dewy:0, clean:0, romantic:0, bold:0, cool:0 }, resultType: null };
+  document.getElementById('selfie-no').classList.add('selected');
+  document.getElementById('selfie-yes').classList.remove('selected');
+  document.getElementById('selfie-preview').classList.add('hidden');
+  showScreen('welcome');
+}
+
+function shareResult() {
+  const type = TYPES[state.resultType];
+  const text = `나의 뷰티 타입은 ${type.name} ✦ ${type.sub}`;
+  if (navigator.share) navigator.share({ title: '나의 뷰티 타입', text });
+  else { navigator.clipboard.writeText(text); alert('클립보드에 복사됐어요!'); }
+}
+
+function showScreen(name) {
+  ['welcome','question','selfie','loading','result'].forEach(s => {
+    document.getElementById(`screen-${s}`).classList.toggle('hidden', s !== name);
+  });
+}
+</script>
+</body>
+</html>
