@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beauty Type Test</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #D4537E;
+    --pink-light: #FBEAF0;
+    --pink-mid: #F4C0D1;
+    --pink-dark: #72243E;
+    --black: #1A1A1A;
+    --gray1: #5C5C5C;
+    --gray2: #9E9E9E;
+    --gray3: #E8E8E8;
+    --gray4: #F7F7F7;
+    --white: #FFFFFF;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--gray4);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 16px 60px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    padding: 36px 32px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+  }
+
+  /* ── Welcome ── */
+  .welcome-logo {
+    width: 52px; height: 52px;
+    background: var(--pink-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .welcome-logo svg { width: 24px; height: 24px; }
+  .welcome-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--pink); text-transform: uppercase; margin-bottom: 8px; }
+  .welcome-title { font-size: 26px; font-weight: 700; color: var(--black); line-height: 1.2; margin-bottom: 10px; }
+  .welcome-sub { font-size: 14px; color: var(--gray1); line-height: 1.6; margin-bottom: 28px; }
+  .welcome-meta { display: flex; gap: 16px; margin-bottom: 32px; }
+  .welcome-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray2); }
+  .welcome-meta-item span { font-size: 15px; }
+
+  /* ── Selfie opt-in ── */
+  .selfie-banner {
+    background: var(--pink-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 28px;
+  }
+  .selfie-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .selfie-text { font-size: 13px; color: var(--pink-dark); line-height: 1.5; }
+  .selfie-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
+
+  .selfie-btns { display: flex; gap: 10px; margin-bottom: 28px; }
+  .selfie-btn {
+    flex: 1; padding: 11px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray3); background: var(--white);
+    font-size: 13px; font-weight: 500; color: var(--gray1);
+    cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .selfie-btn:hover { border-color: var(--pink); color: var(--pink); }
+  .selfie-btn.selected { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); }
+
+  /* ── Primary Button ── */
+  .btn-primary {
+    width: 100%; padding: 15px;
+    background: var(--pink); color: var(--white);
+    border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+  .btn-ghost {
+    background: none; border: none;
+    font-size: 13px; color: var(--gray2);
+    cursor: pointer; padding: 8px 0;
+    text-decoration: underline;
+  }
+  .btn-ghost:hover { color: var(--gray1); }
+
+  /* ── Progress ── */
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--pink); text-transform: uppercase; }
+  .progress-count { font-size: 12px; color: var(--gray2); }
+  .progress-bar { height: 3px; background: var(--gray3); border-radius: 2px; }
+  .progress-fill { height: 100%; background: var(--pink); border-radius: 2px; transition: width 0.3s ease; }
+
+  /* ── Question ── */
+  .q-title { font-size: 19px; font-weight: 700; color: var(--black); line-height: 1.35; margin-bottom: 6px; }
+  .q-hint { font-size: 13px; color: var(--gray2); margin-bottom: 20px; }
+
+  /* ── Options ── */
+  .options { display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
+  .option {
+    padding: 13px 16px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray3); background: var(--white);
+    font-size: 14px; color: var(--gray1);
+    cursor: pointer; transition: all 0.15s;
+    text-align: left; display: flex; align-items: center; gap: 10px;
+  }
+  .option:hover { border-color: var(--pink-mid); color: var(--black); }
+  .option.selected { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); font-weight: 500; }
+  .option-dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid var(--gray3); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .option.selected .option-dot { background: var(--pink); border-color: var(--pink); }
+  .option.selected .option-dot::after { content: ''; display: block; width: 6px; height: 6px; background: white; border-radius: 50%; }
+
+  /* multi-select tag style */
+  .options.multi { flex-direction: row; flex-wrap: wrap; }
+  .options.multi .option {
+    flex: 0 0 auto; padding: 8px 14px;
+    border-radius: 20px; font-size: 13px;
+  }
+  .options.multi .option-dot { display: none; }
+
+  /* ── Nav ── */
+  .nav-row { display: flex; gap: 10px; align-items: center; }
+  .btn-back {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid var(--gray3); background: var(--white);
+    cursor: pointer; font-size: 16px; color: var(--gray1);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: border-color 0.15s;
+  }
+  .btn-back:hover { border-color: var(--gray2); }
+
+  /* ── Loading ── */
+  .loading-wrap { text-align: center; padding: 20px 0; }
+  .loading-spinner {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 3px solid var(--gray3);
+    border-top-color: var(--pink);
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-title { font-size: 17px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
+  .loading-sub { font-size: 13px; color: var(--gray2); }
+
+  /* ── Result ── */
+  .result-hero {
+    background: var(--pink-light);
+    border-radius: var(--radius);
+    padding: 24px; text-align: center;
+    margin-bottom: 24px;
+  }
+  .result-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--pink); text-transform: uppercase; margin-bottom: 6px; }
+  .result-type-name { font-size: 28px; font-weight: 700; color: var(--pink-dark); margin-bottom: 6px; }
+  .result-type-sub { font-size: 13px; color: var(--pink); line-height: 1.5; }
+
+  .result-tags { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .result-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: white; color: var(--pink-dark); }
+
+  .swatches { display: flex; gap: 8px; justify-content: center; margin: 12px 0 0; }
+  .swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px rgba(0,0,0,0.08); }
+
+  .result-section { margin-bottom: 20px; }
+  .result-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gray2);
+    margin-bottom: 10px;
+  }
+  .routine-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .routine-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14px; color: var(--gray1); line-height: 1.4;
+  }
+  .routine-step {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--pink-light); color: var(--pink);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .product-card {
+    border: 1px solid var(--gray3); border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .product-tier { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--pink); margin-bottom: 3px; }
+  .product-name { font-size: 12px; font-weight: 500; color: var(--black); line-height: 1.3; }
+  .product-brand { font-size: 11px; color: var(--gray2); }
+
+  .selfie-note {
+    background: var(--pink-light); border-radius: var(--radius-sm);
+    padding: 12px 14px; font-size: 13px; color: var(--pink-dark);
+    display: flex; gap: 8px; align-items: center; margin-bottom: 20px;
+  }
+
+  .divider { height: 1px; background: var(--gray3); margin: 20px 0; }
+
+  .share-row { display: flex; gap: 8px; }
+  .btn-share {
+    flex: 1; padding: 12px;
+    border-radius: var(--radius-sm); border: 1.5px solid var(--gray3);
+    background: var(--white); font-size: 13px; font-weight: 500;
+    color: var(--gray1); cursor: pointer; transition: all 0.15s;
+  }
+  .btn-share:hover { border-color: var(--pink); color: var(--pink); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 400px) {
+    .card { padding: 28px 20px; }
+    .q-title { font-size: 17px; }
+    .product-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="card" id="card">
+
+    <!-- SCREEN: Welcome -->
+    <div id="screen-welcome">
+      <div class="welcome-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D4537E" stroke-width="1.8">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+          <line x1="9" y1="9" x2="9.01" y2="9" stroke-linecap="round" stroke-width="2.5"/>
+          <line x1="15" y1="9" x2="15.01" y2="9" stroke-linecap="round" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="welcome-eyebrow">Beauty Type Test</div>
+      <h1 class="welcome-title">Discover your<br>beauty profile</h1>
+      <p class="welcome-sub">12 quick questions about your skin, style, and goals — we'll match you to your beauty type and build a personalized routine.</p>
+      <div class="welcome-meta">
+        <div class="welcome-meta-item"><span>⏱</span> 3 minutes</div>
+        <div class="welcome-meta-item"><span>✦</span> 6 beauty types</div>
+        <div class="welcome-meta-item"><span>🎁</span> Free results</div>
+      </div>
+
+      <div class="selfie-banner">
+        <div class="selfie-icon">📷</div>
+        <div class="selfie-text">
+          <strong>Want more accurate results?</strong>
+          Adding a selfie lets us analyze your skin tone & undertone automatically. Totally optional.
+        </div>
+      </div>
+      <div class="selfie-btns">
+        <button class="selfie-btn selected" id="selfie-no" onclick="setSelfie(false)">Skip for now</button>
+        <button class="selfie-btn" id="selfie-yes" onclick="setSelfie(true)">✦ Add selfie</button>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">Start the test →</button>
+    </div>
+
+    <!-- SCREEN: Question -->
+    <div id="screen-question" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-cat" id="q-category"></span>
+          <span class="progress-count" id="q-count"></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="q-progress"></div></div>
+      </div>
+      <div class="q-title" id="q-title"></div>
+      <div class="q-hint" id="q-hint"></div>
+      <div class="options" id="q-options"></div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <button class="btn-primary" id="btn-next" onclick="goNext()" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- SCREEN: Selfie Upload -->
+    <div id="screen-selfie" class="hidden">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span class="progress-cat">Face Analysis</span>
+          <span class="progress-count">Optional</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+      </div>
+      <div class="q-title">Upload a selfie for a more accurate analysis</div>
+      <div class="q-hint" style="margin-bottom:20px">We'll use it to detect your skin tone and undertone. Your photo is never stored.</div>
+      <div style="border: 2px dashed var(--gray3); border-radius: var(--radius); padding: 32px; text-align: center; margin-bottom: 20px; cursor: pointer; background: var(--gray4);" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 32px; margin-bottom: 8px;">🤳</div>
+        <div style="font-size: 14px; font-weight: 500; color: var(--gray1); margin-bottom: 4px;">Tap to upload</div>
+        <div style="font-size: 12px; color: var(--gray2);">or take a photo in good lighting</div>
+        <input type="file" id="file-input" accept="image/*" capture="user" style="display:none" onchange="handleSelfie(event)">
+      </div>
+      <div id="selfie-preview" class="hidden" style="text-align:center; margin-bottom:20px;">
+        <img id="selfie-img" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid var(--pink-light);">
+        <div style="font-size: 12px; color: var(--pink); margin-top: 8px; font-weight: 500;">Photo added ✓</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="skipSelfie()">Skip</button>
+        <button class="btn-primary" onclick="showLoading()">See my results →</button>
+      </div>
+    </div>
+
+    <!-- SCREEN: Loading -->
+    <div id="screen-loading" class="hidden">
+      <div class="loading-wrap">
+        <div class="loading-spinner"></div>
+        <div class="loading-title" id="loading-text">Analyzing your beauty profile...</div>
+        <div class="loading-sub">Matching you to your type</div>
+      </div>
+    </div>
+
+    <!-- SCREEN: Result -->
+    <div id="screen-result" class="hidden">
+      <div class="result-hero">
+        <div class="result-eyebrow">Your beauty type</div>
+        <div class="result-type-name" id="res-name"></div>
+        <div class="result-type-sub" id="res-sub"></div>
+        <div class="result-tags" id="res-tags"></div>
+        <div class="swatches" id="res-swatches"></div>
+      </div>
+
+      <div id="selfie-result-note" class="selfie-note hidden">
+        <span>📷</span>
+        <span id="selfie-analysis-text"></span>
+      </div>
+
+      <div class="result-section">
+        <div class="result-section-label">Color Analysis</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:120px; background:var(--gray4); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:11px; color:var(--gray2); margin-bottom:2px;">Undertone</div>
+            <div style="font-size:14px; font-weight:600; color:var(--black);" id="res-undertone"></div>
+          </div>
+          <div style="flex:1; min-width:120px; background:var(--gray4); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:11px; color:var(--gray2); margin-bottom:2px;">Finish</div>
+            <div style="font-size:14px; font-weight:600; color:var(--black);" id="res-finish"></div>
+          </div>
+          <div style="flex:1; min-width:120px; background:var(--gray4); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:11px; color:var(--gray2); margin-bottom:2px;">Avoid</div>
+            <div style="font-size:14px; font-weight:600; color:var(--black);" id="res-avoid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <div class="result-section-label">Your personalized routine</div>
+        <ul class="routine-list" id="res-routine"></ul>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <div class="result-section-label">Product picks for you</div>
+        <div class="product-grid" id="res-products"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <div class="result-section-label">Matte vs Dewy · Warm vs Cool</div>
+        <div style="background:var(--pink-light); border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; color:var(--pink-dark); line-height:1.6;" id="res-comparison"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="share-row">
+        <button class="btn-share" onclick="retakeQuiz()">↩ Retake</button>
+        <button class="btn-share" onclick="shareResult()">Share result ↗</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── Data ──────────────────────────────────────────────────────────────────
+
+const QUESTIONS = [
+  // Skin Basics
+  {
+    id: 'skin_type', category: 'Skin Basics', q: "What's your skin type?",
+    hint: null, multi: false,
+    options: ['Oily', 'Dry', 'Combination', 'Normal', 'Sensitive'],
+    scores: {
+      'Oily':        { clean:2, dewy:0, bare:0, romantic:1, bold:1, cool:1 },
+      'Dry':         { bare:2, dewy:2, clean:0, romantic:1, bold:0, cool:0 },
+      'Combination': { clean:2, bare:1, dewy:1, romantic:1, bold:1, cool:1 },
+      'Normal':      { bare:1, clean:1, dewy:1, romantic:1, bold:1, cool:1 },
+      'Sensitive':   { bare:3, clean:1, dewy:1, romantic:1, bold:0, cool:0 },
+    }
+  },
+  {
+    id: 'skin_concerns', category: 'Skin Basics', q: 'What are your main skin concerns?',
+    hint: 'Choose all that apply', multi: true,
+    options: ['Acne', 'Redness', 'Dark spots', 'Large pores', 'Dryness', 'Dullness'],
+    scores: {
+      'Acne':       { bare:1, clean:1 },
+      'Redness':    { bare:1, dewy:0 },
+      'Dark spots': { clean:1, dewy:1 },
+      'Large pores':{ clean:2 },
+      'Dryness':    { dewy:2, bare:1 },
+      'Dullness':   { dewy:2, romantic:1 },
+    }
+  },
+  // Makeup Preferences
+  {
+    id: 'frequency', category: 'Makeup Preferences', q: 'How often do you wear makeup?',
+    hint: null, multi: false,
+    options: ['Every day', 'A few times a week', 'Occasionally', 'Rarely / never'],
+    scores: {
+      'Every day':           { clean:2, romantic:2, bold:2, cool:2 },
+      'A few times a week':  { dewy:2, cool:1, romantic:1 },
+      'Occasionally':        { bare:2, dewy:1 },
+      'Rarely / never':      { bare:3 },
+    }
+  },
+  {
+    id: 'style', category: 'Makeup Preferences', q: 'Which style feels most like you?',
+    hint: 'Go with your gut', multi: false,
+    options: ['No-makeup, natural', 'Soft & feminine', 'Clean & polished', 'Bold & expressive', 'Effortlessly cool'],
+    scores: {
+      'No-makeup, natural': { bare:4 },
+      'Soft & feminine':    { romantic:4, dewy:1 },
+      'Clean & polished':   { clean:4 },
+      'Bold & expressive':  { bold:4 },
+      'Effortlessly cool':  { cool:4 },
+    }
+  },
+  {
+    id: 'time', category: 'Makeup Preferences', q: 'How long do you spend getting ready?',
+    hint: null, multi: false,
+    options: ['Under 5 min', '5–15 min', '15–30 min', '30 min+'],
+    scores: {
+      'Under 5 min': { bare:3 },
+      '5–15 min':    { dewy:2, cool:2, bare:1 },
+      '15–30 min':   { clean:2, romantic:2 },
+      '30 min+':     { bold:3, clean:1 },
+    }
+  },
+  // Complexion
+  {
+    id: 'undertone', category: 'Complexion', q: 'Gold or silver jewelry — which suits you more?',
+    hint: 'This helps us find your undertone', multi: false,
+    options: ['Gold (warm tones)', 'Silver (cool tones)', 'Both look good', "I'm not sure"],
+    scores: {
+      'Gold (warm tones)':  { bare:1, dewy:1, romantic:1 },
+      'Silver (cool tones)':{ cool:2, clean:1 },
+      'Both look good':     { cool:1, clean:1, romantic:1 },
+      "I'm not sure":       {},
+    }
+  },
+  {
+    id: 'tone', category: 'Complexion', q: "What's your skin tone?",
+    hint: null, multi: false,
+    options: ['Fair', 'Light', 'Medium', 'Tan', 'Deep'],
+    scores: {
+      'Fair':   {}, 'Light':  {}, 'Medium': {}, 'Tan':    {}, 'Deep':   {}
+    }
+  },
+  // Product Preference
+  {
+    id: 'budget', category: 'Product Preference', q: "What's your budget per product?",
+    hint: null, multi: false,
+    options: ['Under $15', '$15–35', '$35–60', '$60+'],
+    scores: {
+      'Under $15': {}, '$15–35': {}, '$35–60': {}, '$60+': {}
+    }
+  },
+  {
+    id: 'prefs', category: 'Product Preference', q: 'Any preferences or must-haves?',
+    hint: 'Choose all that apply', multi: true,
+    options: ['Fragrance-free', 'Cruelty-free', 'Vegan', 'SPF included', 'Hypoallergenic', 'No preference'],
+    scores: {}
+  },
+  // Lifestyle
+  {
+    id: 'climate', category: 'Lifestyle', q: 'What climate do you live in?',
+    hint: null, multi: false,
+    options: ['Dry', 'Humid', 'Cold', 'Mixed / seasonal'],
+    scores: {
+      'Dry':             { dewy:2, bare:1 },
+      'Humid':           { clean:2, cool:1 },
+      'Cold':            { dewy:1, romantic:1 },
+      'Mixed / seasonal':{ clean:1 },
+    }
+  },
+  {
+    id: 'longevity', category: 'Lifestyle', q: 'Does your makeup need to last all day?',
+    hint: null, multi: false,
+    options: ['Yes, definitely', 'Would be nice', 'Not really'],
+    scores: {
+      'Yes, definitely': { clean:2, bold:1 },
+      'Would be nice':   { clean:1, cool:1 },
+      'Not really':      { bare:2, dewy:1 },
+    }
+  },
+  // Goal
+  {
+    id: 'goal', category: 'Goal', q: "What's your #1 goal right now?",
+    hint: 'This shapes your result page', multi: false,
+    options: ['Build a daily routine', 'Find flattering colors', 'Find my foundation shade', 'Learn techniques', 'Get product recommendations', 'Makeup for a specific event'],
+    scores: {
+      'Build a daily routine':      { bare:1, clean:1 },
+      'Find flattering colors':     { romantic:1, cool:1 },
+      'Find my foundation shade':   { clean:1 },
+      'Learn techniques':           { bold:1 },
+      'Get product recommendations':{ dewy:1 },
+      'Makeup for a specific event':{ bold:1, romantic:1 },
+    }
+  },
+];
+
+const TYPES = {
+  bare: {
+    name: 'Bare Skin',
+    sub: 'Skincare-first · Effortless · Your skin, but better',
+    tags: ['no-makeup look', 'skincare-first', '5-min routine'],
+    colors: ['#C8956C', '#E8C9A8', '#F5E6D8', '#D4A574'],
+    undertone: 'Neutral–Warm',
+    finish: 'Natural / Dewy',
+    avoid: 'Heavy coverage, matte',
+    routine: ['SPF moisturizer or tinted moisturizer', 'Clear brow gel', 'Lash serum or clear mascara', 'Tinted lip balm'],
+    products: [
+      { tier: 'Drugstore', name: 'e.l.f. Halo Glow', brand: 'e.l.f.' },
+      { tier: 'Mid-range', name: 'Glossier Skin Tint', brand: 'Glossier' },
+      { tier: 'Splurge', name: 'Armani Luminous Silk', brand: 'Armani' },
+      { tier: 'Lip', name: 'Laneige Lip Sleeping Mask', brand: 'Laneige' },
+    ],
+    comparison: 'Your skin tone and preference point to a Dewy, natural finish — avoid full-matte bases. For undertone: lean warm. Stick to peach-beige and golden-nude shades rather than pink-cool tones.',
+  },
+  dewy: {
+    name: 'Dewy Glow',
+    sub: 'Glass skin · Luminous · Moisture is everything',
+    tags: ['glass skin', 'highlighter', 'cushion'],
+    colors: ['#F9D5C0', '#F4A97F', '#D4897A', '#E8B49A'],
+    undertone: 'Warm',
+    finish: 'Dewy / Luminous',
+    avoid: 'Matte powders, flat finishes',
+    routine: ['Hydrating primer', 'Cushion foundation or skin tint', 'Liquid cream blush', 'Liquid highlighter on high points', 'Glossy lip'],
+    products: [
+      { tier: 'Drugstore', name: 'Maybelline Dream Cushion', brand: 'Maybelline' },
+      { tier: 'Mid-range', name: 'Rare Beauty Positive Light', brand: 'Rare Beauty' },
+      { tier: 'Splurge', name: 'Charlotte Tilbury Hollywood Flawless Filter', brand: 'CT' },
+      { tier: 'Highlighter', name: 'BECCA Shimmering Skin Perfector', brand: 'BECCA' },
+    ],
+    comparison: 'Dewy is your signature — it photographs beautifully and works with your warm undertone. If you live somewhere humid, use a light setting spray to prevent migration rather than powder.',
+  },
+  clean: {
+    name: 'Clean Classic',
+    sub: 'Polished · Confident · Flawless all day',
+    tags: ['full coverage', 'long-wear', 'office-ready'],
+    colors: ['#8B4A6E', '#C2748A', '#E8B4C0', '#A06080'],
+    undertone: 'Cool–Neutral',
+    finish: 'Satin / Semi-matte',
+    avoid: 'Glittery shadows, unblended edges',
+    routine: ['Pore-blurring primer', 'Medium–full coverage foundation', 'Powder to set T-zone', 'Neutral eyeshadow + liner', 'Satin or matte lip'],
+    products: [
+      { tier: 'Drugstore', name: 'L\'Oréal Infallible 24HR', brand: 'L\'Oréal' },
+      { tier: 'Mid-range', name: 'Estée Lauder Double Wear', brand: 'Estée Lauder' },
+      { tier: 'Splurge', name: 'NARS Sheer Glow', brand: 'NARS' },
+      { tier: 'Lip', name: 'MAC Velvet Teddy', brand: 'MAC' },
+    ],
+    comparison: 'Satin or semi-matte finishes give you the polished look you\'re after without looking flat. Your cool-neutral undertone means rose-toned and berry lips will look stunning on you.',
+  },
+  romantic: {
+    name: 'Soft Romantic',
+    sub: 'Rosy cheeks · Feminine · Pink-toned everything',
+    tags: ['blush queen', 'rosy', 'feminine'],
+    colors: ['#F4B8C5', '#E87FA0', '#D4537E', '#F0C8D4'],
+    undertone: 'Warm–Neutral',
+    finish: 'Natural / Satin',
+    avoid: 'Harsh contour, cool nudes',
+    routine: ['Skin tint or light foundation', 'Fluffy blush — cheeks & nose', 'Rosy or mauve lip', 'Mascara', 'Optional: gold shimmer eye'],
+    products: [
+      { tier: 'Drugstore', name: 'Milani Baked Blush', brand: 'Milani' },
+      { tier: 'Mid-range', name: 'Benefit Dandelion Blush', brand: 'Benefit' },
+      { tier: 'Splurge', name: 'Tower 28 SunnyDays', brand: 'Tower 28' },
+      { tier: 'Lip', name: 'Dior Lip Glow in 001 Pink', brand: 'Dior' },
+    ],
+    comparison: 'Lean into warm pinks and peachy roses — they harmonize with your warm-neutral undertone. A natural finish lets your blush be the star. Skip cool-toned nudes; they can look washed out.',
+  },
+  bold: {
+    name: 'Bold Artist',
+    sub: 'Graphic liner · Color play · Statement looks',
+    tags: ['eye makeup', 'color', 'editorial'],
+    colors: ['#5C2D91', '#9B4DCA', '#C77DFF', '#7B52A8'],
+    undertone: 'Variable',
+    finish: 'Matte / Mixed',
+    avoid: 'Playing it too safe',
+    routine: ['Matte or satin base', 'Bold eyeshadow or graphic liner', 'Highlight inner corner', 'Bare or nude lip to balance', 'Setting spray to lock it in'],
+    products: [
+      { tier: 'Drugstore', name: 'NYX Epic Ink Liner', brand: 'NYX' },
+      { tier: 'Mid-range', name: 'Urban Decay 24/7 Palette', brand: 'Urban Decay' },
+      { tier: 'Splurge', name: 'Pat McGrath EYEdols Shadow', brand: 'Pat McGrath' },
+      { tier: 'Setting', name: 'Urban Decay All Nighter Spray', brand: 'Urban Decay' },
+    ],
+    comparison: 'For bold looks: pair a strong eye with a bare or nude lip so the face stays balanced. Matte lids photograph cleanly; add shimmer to the inner corner for dimension without chaos.',
+  },
+  cool: {
+    name: 'Effortless Cool',
+    sub: 'Cool tones · Editorial · Minimal but impactful',
+    tags: ['cool tones', 'editorial', 'berry lip'],
+    colors: ['#708090', '#B0C4DE', '#778899', '#A8B8C8'],
+    undertone: 'Cool',
+    finish: 'Natural / Matte',
+    avoid: 'Orange-based foundations, bronze',
+    routine: ['SPF base or sheer foundation', 'Cool-toned brow pencil', 'Mascara', 'Berry or plum lip (your signature)', 'Optional: cool smoky eye'],
+    products: [
+      { tier: 'Drugstore', name: 'Neutrogena Skin Tint', brand: 'Neutrogena' },
+      { tier: 'Mid-range', name: 'Fenty Pro Filt\'r (cool shade)', brand: 'Fenty' },
+      { tier: 'Splurge', name: 'Armani Luminous Silk', brand: 'Armani' },
+      { tier: 'Lip', name: 'MAC Diva (dark berry)', brand: 'MAC' },
+    ],
+    comparison: 'Your cool undertone means warm bronzes can look off — stick to cool-toned blushes (mauves, berries) and rose-based foundations. A berry lip is your power move and instantly elevates any look.',
+  },
+};
+
+// ─── State ──────────────────────────────────────────────────────────────────
+let state = {
+  useSelfie: false,
+  currentQ: 0,
+  answers: {},   // id -> value or array
+  scores: { bare:0, dewy:0, clean:0, romantic:0, bold:0, cool:0 },
+  resultType: null,
+};
+
+// ─── Selfie toggle ───────────────────────────────────────────────────────────
+function setSelfie(val) {
+  state.useSelfie = val;
+  document.getElementById('selfie-no').classList.toggle('selected', !val);
+  document.getElementById('selfie-yes').classList.toggle('selected', val);
+}
+
+// ─── Start ───────────────────────────────────────────────────────────────────
+function startQuiz() {
+  state.currentQ = 0;
+  showQuestion(0);
+}
+
+// ─── Show question ────────────────────────────────────────────────────────────
+function showQuestion(idx) {
+  showScreen('question');
+  const q = QUESTIONS[idx];
+  document.getElementById('q-category').textContent = q.category;
+  document.getElementById('q-count').textContent = `${idx + 1} / ${QUESTIONS.length}`;
+  document.getElementById('q-progress').style.width = `${((idx + 1) / QUESTIONS.length) * 100}%`;
+  document.getElementById('q-title').textContent = q.q;
+  document.getElementById('q-hint').textContent = q.hint || '';
+  document.getElementById('q-hint').style.display = q.hint ? 'block' : 'none';
+
+  const optEl = document.getElementById('q-options');
+  optEl.className = 'options' + (q.multi ? ' multi' : '');
+  optEl.innerHTML = '';
+
+  const existing = state.answers[q.id];
+
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+
+    let isSelected = false;
+    if (q.multi) {
+      isSelected = Array.isArray(existing) && existing.includes(opt);
+      btn.innerHTML = `<span>${opt}</span>`;
+    } else {
+      isSelected = existing === opt;
+      btn.innerHTML = `<div class="option-dot"></div><span>${opt}</span>`;
+    }
+
+    if (isSelected) btn.classList.add('selected');
+    btn.addEventListener('click', () => selectOption(btn, opt, q));
+    optEl.appendChild(btn);
+  });
+
+  updateNextBtn();
+}
+
+function selectOption(btn, value, q) {
+  if (q.multi) {
+    btn.classList.toggle('selected');
+    const selected = Array.from(document.querySelectorAll('#q-options .option.selected'))
+      .map(b => b.querySelector('span').textContent);
+    state.answers[q.id] = selected;
+  } else {
+    document.querySelectorAll('#q-options .option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.answers[q.id] = value;
+  }
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const q = QUESTIONS[state.currentQ];
+  const ans = state.answers[q.id];
+  const hasAnswer = q.multi ? (Array.isArray(ans) && ans.length > 0) : !!ans;
+  document.getElementById('btn-next').disabled = !hasAnswer;
+  const isLast = state.currentQ === QUESTIONS.length - 1;
+  document.getElementById('btn-next').textContent = isLast ? 'See my results →' : 'Next →';
+}
+
+function goNext() {
+  if (state.currentQ < QUESTIONS.length - 1) {
+    state.currentQ++;
+    showQuestion(state.currentQ);
+  } else {
+    if (state.useSelfie) {
+      showScreen('selfie');
+    } else {
+      showLoading();
+    }
+  }
+}
+
+function goBack() {
+  if (state.currentQ > 0) {
+    state.currentQ--;
+    showQuestion(state.currentQ);
+  } else {
+    showScreen('welcome');
+  }
+}
+
+function skipSelfie() { showLoading(); }
+
+function handleSelfie(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('selfie-img').src = ev.target.result;
+    document.getElementById('selfie-preview').classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ─── Loading ─────────────────────────────────────────────────────────────────
+function showLoading() {
+  showScreen('loading');
+  calcScores();
+  const msgs = ['Analyzing your answers...', 'Matching your beauty type...', 'Building your routine...'];
+  let i = 0;
+  const interval = setInterval(() => {
+    i++;
+    if (i < msgs.length) document.getElementById('loading-text').textContent = msgs[i];
+    else { clearInterval(interval); showResult(); }
+  }, 800);
+}
+
+// ─── Score ────────────────────────────────────────────────────────────────────
+function calcScores() {
+  const sc = { bare:0, dewy:0, clean:0, romantic:0, bold:0, cool:0 };
+  QUESTIONS.forEach(q => {
+    const ans = state.answers[q.id];
+    if (!ans || !q.scores) return;
+    const applyScore = val => {
+      const s = q.scores[val];
+      if (s) Object.entries(s).forEach(([k, v]) => sc[k] = (sc[k] || 0) + v);
+    };
+    if (Array.isArray(ans)) ans.forEach(applyScore);
+    else applyScore(ans);
+  });
+  state.scores = sc;
+  state.resultType = Object.entries(sc).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+// ─── Result ───────────────────────────────────────────────────────────────────
+function showResult() {
+  showScreen('result');
+  const type = TYPES[state.resultType];
+  document.getElementById('res-name').textContent = type.name;
+  document.getElementById('res-sub').textContent = type.sub;
+
+  const tagsEl = document.getElementById('res-tags');
+  tagsEl.innerHTML = type.tags.map(t => `<span class="result-tag">${t}</span>`).join('');
+
+  const swatchEl = document.getElementById('res-swatches');
+  swatchEl.innerHTML = type.colors.map(c => `<div class="swatch" style="background:${c}"></div>`).join('');
+
+  // Undertone logic: override if selfie or if they answered the jewelry q
+  let undertone = type.undertone;
+  const utAns = state.answers['undertone'];
+  if (utAns === 'Gold (warm tones)') undertone = 'Warm';
+  else if (utAns === 'Silver (cool tones)') undertone = 'Cool';
+
+  document.getElementById('res-undertone').textContent = undertone;
+  document.getElementById('res-finish').textContent = type.finish;
+  document.getElementById('res-avoid').textContent = type.avoid;
+
+  // Selfie note
+  if (document.getElementById('selfie-img').src && state.useSelfie) {
+    const note = document.getElementById('selfie-result-note');
+    note.classList.remove('hidden');
+    document.getElementById('selfie-analysis-text').textContent =
+      `Based on your selfie, your skin tone reads as ${state.answers['tone'] || 'medium'} with a ${undertone.toLowerCase()} undertone — results adjusted accordingly.`;
+  }
+
+  // Routine
+  const routineEl = document.getElementById('res-routine');
+  routineEl.innerHTML = type.routine.map((step, i) =>
+    `<li><div class="routine-step">${i+1}</div><span>${step}</span></li>`
+  ).join('');
+
+  // Products
+  const prodEl = document.getElementById('res-products');
+  prodEl.innerHTML = type.products.map(p =>
+    `<div class="product-card">
+      <div class="product-tier">${p.tier}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-brand">${p.brand}</div>
+    </div>`
+  ).join('');
+
+  document.getElementById('res-comparison').textContent = type.comparison;
+}
+
+function retakeQuiz() {
+  state = { useSelfie: false, currentQ: 0, answers: {}, scores: { bare:0, dewy:0, clean:0, romantic:0, bold:0, cool:0 }, resultType: null };
+  document.getElementById('selfie-no').classList.add('selected');
+  document.getElementById('selfie-yes').classList.remove('selected');
+  document.getElementById('selfie-preview').classList.add('hidden');
+  showScreen('welcome');
+}
+
+function shareResult() {
+  const type = TYPES[state.resultType];
+  const text = `My beauty type is ${type.name} ✦ ${type.sub}`;
+  if (navigator.share) navigator.share({ title: 'My Beauty Type', text });
+  else { navigator.clipboard.writeText(text); alert('Copied to clipboard!'); }
+}
+
+// ─── Screen helper ────────────────────────────────────────────────────────────
+function showScreen(name) {
+  ['welcome','question','selfie','loading','result'].forEach(s => {
+    document.getElementById(`screen-${s}`).classList.toggle('hidden', s !== name);
+  });
+}
+</script>
+</body>
+</html>
